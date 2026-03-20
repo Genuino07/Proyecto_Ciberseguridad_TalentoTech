@@ -22,4 +22,4 @@ A través de una arquitectura que combina **SQL** para la gestión de datos y **
 ## 🛠️ Instalación y Uso
 1. **Clonar el repositorio:**
    ```bash
-   git clone [https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech.git]https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech.git
+   https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech.git
