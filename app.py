@@ -131,20 +131,76 @@ elif menu == "💰 Análisis de Costos":
     st.dataframe(df_costos)
 
 elif menu == "🌍 Análisis Geográfico":
-    st.title("🌍 Comparativa Global por Países")
-    query_pais = "SELECT country, SUM(financial_loss_in_million_) as perdida_total, AVG(incident_resolution_time_in_hours) as tiempo_avg FROM amenazas GROUP BY country"
-    df_pais = ejecutar_query(query_pais)
-    fig_mapa = px.choropleth(df_pais, locations="country", locationmode='country names',
-                             color="perdida_total", title="Impacto Económico Global", color_continuous_scale="Reds")
+    st.title("🌍 Mapa de Calor de Amenazas Globales")
+    
+    # Consulta detallada
+    query_mapa = "SELECT country, attack_type, financial_loss_in_million_, number_of_affected_users FROM amenazas"
+    df_mapa = ejecutar_query(query_mapa)
+
+    # Selector interactivo para filtrar el mapa
+    tipo_filtro = st.selectbox("Filtrar mapa por tipo de ataque:", ["Todos"] + list(df_mapa['attack_type'].unique()))
+    
+    if tipo_filtro != "Todos":
+        df_mapa = df_mapa[df_mapa['attack_type'] == tipo_filtro]
+
+    # Crear el mapa interactivo
+    fig_mapa = px.scatter_geo(df_mapa, 
+        locations="country", 
+        locationmode='country names',
+        color="attack_type", 
+        hover_name="country", 
+        size="financial_loss_in_million_",
+        projection="natural earth",
+        title="Impacto Financiero por País y Tipo de Ataque",
+        labels={'financial_loss_in_million_': 'Pérdida (MUSD)'},
+        template="plotly_dark",
+        color_discrete_sequence=px.colors.qualitative.Pastel)
+
+    # Ajustes estéticos del mapa
+    fig_mapa.update_geos(
+        showcountries=True, countrycolor="RebeccaPurple",
+        showcoastlines=True, coastlinecolor="DarkSlateBlue",
+        showland=True, landcolor="LightSlateGrey",
+        showocean=True, oceancolor="Black"
+    )
+
     st.plotly_chart(fig_mapa, use_container_width=True)
 
-    col_left, col_right = st.columns(2)
-    with col_left:
-        st.subheader("Top 10 Más Afectados ($)")
-        st.plotly_chart(px.bar(df_pais.nlargest(10, 'perdida_total'), x='perdida_total', y='country', orientation='h', color='perdida_total', color_continuous_scale='Reds'), use_container_width=True)
-    with col_right:
-        st.subheader("Top 10 Más Rápidos (Respuesta)")
-        st.plotly_chart(px.bar(df_pais.nsmallest(10, 'tiempo_avg'), x='tiempo_avg', y='country', orientation='h', color='tiempo_avg', color_continuous_scale='Greens_r'), use_container_width=True)
+    # --- MÉTRICAS DE LUGAR ---
+    st.divider()
+    col_l, col_r = st.columns(2)
+    with col_l:
+        top_pais = df_mapa.groupby('country')['financial_loss_in_million_'].sum().idxmax()
+        st.info(f"🚩 **País con mayor pérdida:** {top_pais}")
+    with col_r:
+        st.write("""
+        **Guía de uso:**
+        * Usa el **Scroll** para hacer zoom.
+        * Haz **clic y arrastra** para moverte por el globo.
+        * Pasa el cursor sobre un punto para ver el **costo exacto** del ataque en ese país.
+        """)
+
+       # --- SECCIÓN TOP 10 (Corregida) ---
+st.subheader("🏆 Top 10 Países con Mayores Pérdidas")
+
+# Agrupamos los datos correctamente para el ranking
+df_ranking = df_mapa.groupby('country')['financial_loss_in_million_'].sum().reset_index()
+df_ranking = df_ranking.rename(columns={'financial_loss_in_million_': 'perdida_total'})
+
+# Creamos el gráfico usando el nuevo nombre 'perdida_total'
+fig_top10 = px.bar(
+    df_ranking.nlargest(10, 'perdida_total'), 
+    x='perdida_total', 
+    y='country', 
+    orientation='h', 
+    title="Top 10 Más Afectados (MUSD)",
+    color='perdida_total', 
+    color_continuous_scale='Reds',
+    labels={'perdida_total': 'Pérdida Total (MUSD)', 'country': 'País'}
+)
+
+fig_top10.update_layout(yaxis={'categoryorder':'total ascending'}) # Ordenar de mayor a menor
+st.plotly_chart(fig_top10, use_container_width=True)
 
 elif menu == "📈 Evolución Temporal":
     st.title("📈 Análisis de Tendencias Históricas (2015-2024)")
