@@ -20,6 +20,10 @@ A través de una arquitectura que combina **SQL** para la gestión de datos y **
 * `requirements.txt`: Lista de dependencias necesarias para ejecutar el proyecto.
 
 ## 🛠️ Instalación y Uso
-1. **Clonar el repositorio:**
-   ```bash
-   https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech.git
+
+ 🛡️ Proyecto Ciberseguridad - Talento Tech
+
+
+## 🚀 Enlaces Rápidos
+* **WebApp en Vivo:** [Haz clic aquí para abrir la App](https://proyectociberseguridadtalentotech.streamlit.app/)
+* **Repositorio GitHub:** [Genuino07/Proyecto_Ciberseguridad_TalentoTech](https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech)
