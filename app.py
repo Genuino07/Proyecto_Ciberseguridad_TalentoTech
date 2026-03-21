@@ -40,8 +40,9 @@ if menu == "🏠 Inicio":
     
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.image("https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800", 
-                 caption="Transformación Productiva y Seguridad")
+        with col1:
+            st.image("portada.jpeg", caption="Análisis de Amenazas - Proyecto Integrador")
+        
     with col2:
         st.subheader("El Valor de los Datos")
         st.write("""
@@ -54,17 +55,65 @@ if menu == "🏠 Inicio":
         st.info("💡 **Objetivo:** Transformar incidentes globales en recomendaciones prácticas.")
 
 elif menu == "📊 Resumen General":
-    st.title("🛡️ Estado de la Ciberseguridad Global")
+    st.title("📊 Estado de la Ciberseguridad Global")
     df_all = ejecutar_query("SELECT * FROM amenazas")
+    
+    # --- 1. KPIs PRINCIPALES ---
     c1, c2, c3 = st.columns(3)
     c1.metric("Pérdida Total", f"${df_all['financial_loss_in_million_'].sum():,.0f}M")
     c2.metric("Total Usuarios Afectados", f"{df_all['number_of_affected_users'].sum():,}")
     c3.metric("Incidentes Registrados", len(df_all))
 
+    # --- 2. GRÁFICO DE DISTRIBUCIÓN ---
+    st.divider()
     fig_ind = px.bar(df_all.groupby('target_industry').size().reset_index(name='cuenta'), 
                      x='target_industry', y='cuenta', title="Distribución de Ataques por Industria",
                      color='target_industry', template="plotly_dark")
     st.plotly_chart(fig_ind, use_container_width=True)
+
+    # --- 3. GLOSARIO PROFESIONAL DE AMENAZAS ---
+    st.subheader("🕵️ Diccionario de Amenazas Analizadas")
+    st.write("Selecciona una amenaza para entender su funcionamiento y vectores de ataque:")
+
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        with st.expander("🌐 **DDoS (Denegación de Servicio)**"):
+            st.write("""
+            **Qué es:** Inunda un servidor o red con tráfico falso para dejarlo inoperativo.  
+            **Impacto:** Interrupción total de servicios digitales y pérdidas por inactividad.
+            """)
+            
+        with st.expander("🦠 **Malware (Software Malicioso)**"):
+            st.write("""
+            **Qué es:** Término general para virus, troyanos o gusanos diseñados para infiltrarse o dañar un dispositivo sin consentimiento.  
+            **Impacto:** Robo de información y control remoto de sistemas.
+            """)
+
+        with st.expander("👥 **Man-in-the-Middle (MitM)**"):
+            st.write("""
+            **Qué es:** El atacante intercepta en secreto la comunicación entre dos partes (como tu PC y tu banco) para robar datos.  
+            **Impacto:** Robo de credenciales y sesiones bancarias.
+            """)
+
+    with col_b:
+        with st.expander("🎣 **Phishing (Suplantación)**"):
+            st.write("""
+            **Qué es:** Ingeniería social mediante correos o mensajes falsos para engañar al usuario y obtener sus contraseñas.  
+            **Impacto:** Es la puerta de entrada principal para el 90% de los ciberataques.
+            """)
+
+        with st.expander("🔒 **Ransomware (Secuestro de Datos)**"):
+            st.write("""
+            **Qué es:** Cifra los archivos de la víctima y exige un rescate (usualmente en cripto) para devolver el acceso.  
+            **Impacto:** Es el ataque más costoso financieramente en la actualidad.
+            """)
+
+        with st.expander("💉 **SQL Injection (Inyección SQL)**"):
+            st.write("""
+            **Qué es:** Inserción de código malicioso en formularios web para manipular la base de datos de la empresa.  
+            **Impacto:** Filtración masiva de bases de datos de clientes y empleados.
+            """)
 
 elif menu == "💰 Análisis de Costos":
     st.title("💰 Análisis de Impacto Financiero")
@@ -98,11 +147,56 @@ elif menu == "🌍 Análisis Geográfico":
         st.plotly_chart(px.bar(df_pais.nsmallest(10, 'tiempo_avg'), x='tiempo_avg', y='country', orientation='h', color='tiempo_avg', color_continuous_scale='Greens_r'), use_container_width=True)
 
 elif menu == "📈 Evolución Temporal":
-    st.title("📈 Tendencias 2015 - 2024")
-    query_trend = "SELECT year, SUM(financial_loss_in_million_) as total_perdida FROM amenazas GROUP BY year ORDER BY year ASC"
+    st.title("📈 Análisis de Tendencias Históricas (2015-2024)")
+    
+    # Consulta para obtener datos por año y tipo de ataque
+    query_trend = """
+    SELECT year, attack_type, 
+           SUM(financial_loss_in_million_) as total_perdida,
+           COUNT(*) as cantidad_incidentes
+    FROM amenazas 
+    GROUP BY year, attack_type 
+    ORDER BY year ASC
+    """
     df_trend = ejecutar_query(query_trend)
-    fig_line = px.line(df_trend, x='year', y='total_perdida', title="Evolución Anual", markers=True)
-    st.plotly_chart(fig_line, use_container_width=True)
+
+    # 1. Gráfico de Área Apilada (Muestra el crecimiento y la composición)
+    st.subheader("Impacto Económico Acumulado por Tipo de Ataque")
+    fig_area = px.area(df_trend, x="year", y="total_perdida", color="attack_type",
+                       title="Evolución de Pérdidas Financieras (MUSD)",
+                       labels={"total_perdida": "Pérdida (MUSD)", "year": "Año"},
+                       template="plotly_dark",
+                       line_group="attack_type")
+    st.plotly_chart(fig_area, use_container_width=True)
+
+    # 2. Comparativa de Volumen vs Costo
+    col_l, col_r = st.columns(2)
+    
+    with col_l:
+        st.subheader("Crecimiento de Incidentes")
+        # Agrupamos por año para ver el volumen total
+        df_vol = df_trend.groupby('year')['cantidad_incidentes'].sum().reset_index()
+        fig_vol = px.bar(df_vol, x="year", y="cantidad_incidentes", 
+                         title="Cantidad de Ataques por Año",
+                         color_discrete_sequence=['#ff4b4b'])
+        st.plotly_chart(fig_vol, use_container_width=True)
+
+    with col_r:
+        st.subheader("Análisis de Intensidad")
+        st.write("""
+        **Interpretación:** A medida que avanzamos hacia 2024, observamos que la sofisticación de los ataques (como el Ransomware) 
+        ha incrementado la 'pendiente' de la gráfica de área. 
+        
+        Esto sugiere que aunque el número de ataques se mantenga estable, el **costo por incidente** es cada vez mayor debido a la digitalización de la economía.
+        """)
+        st.info("📊 **Dato Clave:** El periodo 2021-2024 muestra una aceleración en pérdidas debido a ataques dirigidos a Infraestructura Crítica.")
+
+    # 3. Selector de Año para Inspección Rápida
+    st.divider()
+    año_sel = st.slider("Desliza para inspeccionar un año específico:", 2015, 2024, 2024)
+    df_year = df_trend[df_trend['year'] == año_sel]
+    st.write(f"### Detalle del año {año_sel}")
+    st.table(df_year[['attack_type', 'total_perdida', 'cantidad_incidentes']].set_index('attack_type'))
 
 elif menu == "⚡ Eficiencia de Defensa":
     st.title("⚡ Análisis de Respuesta y Mitigación")
@@ -118,7 +212,7 @@ elif menu == "⚡ Eficiencia de Defensa":
     """
     df_ef = ejecutar_query(query_eficiencia)
 
-    # 1. Gráfico de Dispersión (Scatter) para ver Eficiencia vs Costo
+    # Gráfico de Dispersión (Scatter) para ver Eficiencia vs Costo
     st.subheader("Rendimiento de Mecanismos de Defensa")
     fig_scatter = px.scatter(df_ef, 
                              x="tiempo_medio", 
@@ -135,7 +229,7 @@ elif menu == "⚡ Eficiencia de Defensa":
     
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-    # 2. Columnas para Insights Rápidos
+    #  Columnas para Insights Rápidos
     col_a, col_b = st.columns(2)
     
     with col_a:
@@ -153,7 +247,7 @@ elif menu == "⚡ Eficiencia de Defensa":
 
     st.divider()
     
-    # 3. Comparativa Detallada (Tabla con estilo)
+    # Comparativa Detallada (Tabla con estilo)
     st.subheader("Métricas Detalladas por Tecnología")
     st.dataframe(df_ef.style.background_gradient(subset=['tiempo_medio'], cmap='RdYlGn_r'))
 
