@@ -3,8 +3,14 @@ import pandas as pd
 import sqlite3
 import plotly.express as px
 
-# 1. Configuración profesional
-st.set_page_config(page_title="CyberSecurity Analytics Pro", layout="wide")
+# 1. IMPORTA TU NUEVO ARCHIVO DE ESTILOS
+from styles import aplicar_estilos_personalizados
+
+# 1. Configuración de página
+st.set_page_config(page_title="Cyber Intelligence Dashboard", layout="wide")
+
+# 2. Aplicar los estilos
+aplicar_estilos_personalizados()
 
 # 2. Conexión a la base de datos
 def ejecutar_query(query):
@@ -13,10 +19,20 @@ def ejecutar_query(query):
     conn.close()
     return df
 
-# --- SIDEBAR (Menú de Navegación con Radio Buttons) ---
-st.sidebar.header("Navegación del Proyecto")
+# --- CARGA GLOBAL DE DATOS ---
 
-# Cambiamos selectbox por radio para que todas las opciones sean visibles
+try:
+    df_all = ejecutar_query("SELECT * FROM amenazas")
+except Exception as e:
+    st.error(f"Error al cargar la base de datos: {e}")
+    df_all = pd.DataFrame() # Crea un dataframe vacío para evitar que la app explote
+
+# =================================================================
+# 3. BARRA LATERAL (SIDEBAR) - NAVEGACIÓN
+# Crea un menú de radio buttons para navegar entre las diferentes 
+# secciones del proyecto integrador.
+# =================================================================
+st.sidebar.header("Navegación del Proyecto")
 menu = st.sidebar.radio(
     "Seleccione una sección:",
     [
@@ -30,114 +46,99 @@ menu = st.sidebar.radio(
     ]
 )
 
-# 4. LÓGICA DE VISTAS (Un solo bloque unificado)
+# =================================================================
+# 4. LÓGICA DE VISTAS (BLOQUES DE CONTENIDO)
+# Dependiendo de la opción seleccionada en el menú, se renderiza 
+# el contenido correspondiente.
+# =================================================================
 
-# --- LÓGICA DE VISTAS (Nombres actualizados para coincidir con los emojis) ---
-
+# --- BLOQUE: INICIO ---
+# Presentación visual del proyecto, objetivos y contexto estratégico.
 if menu == "🏠 Inicio":
     st.title("🛡️ Fortaleciendo la Frontera Digital")
     st.markdown("### Análisis Estratégico de Ciberseguridad 2015-2024")
     
     col1, col2 = st.columns([1, 1])
     with col1:
-        with col1:
-            st.image("portada.jpeg", caption="Análisis de Amenazas - Proyecto Integrador")
+        # Carga la imagen de portada personalizada del proyecto
+        st.image("portada.jpeg", caption="Análisis de Amenazas - Proyecto Integrador")
         
     with col2:
         st.subheader("El Valor de los Datos")
         st.write("""
-        En la era de la transformación productiva, la ciberseguridad no es un lujo, es una necesidad 
-        para la resolución de desafíos sociales y económicos.
-        
-        Este proyecto integra técnicas avanzadas de **Análisis de Datos y SQL** para descubrir 
-        vulnerabilidades y proponer soluciones basadas en evidencia histórica.
+        En la era de la transformación productiva, la ciberseguridad es una necesidad 
+        fundamental para la estabilidad social y económica.
         """)
         st.info("💡 **Objetivo:** Transformar incidentes globales en recomendaciones prácticas.")
 
+# --- BLOQUE: RESUMEN GENERAL ---
+# Visualización de KPIs (Métricas clave) y un glosario interactivo de términos.
 elif menu == "📊 Resumen General":
-    st.title("📊 Estado de la Ciberseguridad Global")
-    df_all = ejecutar_query("SELECT * FROM amenazas")
+    st.markdown("# 📊 Inteligencia de Amenazas")
     
-    # --- 1. KPIs PRINCIPALES ---
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Pérdida Total", f"${df_all['financial_loss_in_million_'].sum():,.0f}M")
-    c2.metric("Total Usuarios Afectados", f"{df_all['number_of_affected_users'].sum():,}")
-    c3.metric("Incidentes Registrados", len(df_all))
+    # Envolvemos las métricas en un contenedor para que el CSS actúe
+    with st.container():
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Impacto Económico", f"${df_all['financial_loss_in_million_'].sum():,.0f}M", "Global")
+        c2.metric("Alcance de Víctimas", f"{df_all['number_of_affected_users'].sum():,}", "Usuarios")
+        c3.metric("Frecuencia", len(df_all), "Eventos")
 
-    # --- 2. GRÁFICO DE DISTRIBUCIÓN ---
+    # Gráfico de Industria
     st.divider()
     fig_ind = px.bar(df_all.groupby('target_industry').size().reset_index(name='cuenta'), 
-                     x='target_industry', y='cuenta', title="Distribución de Ataques por Industria",
+                     x='target_industry', y='cuenta', title="Distribución por Industria",
                      color='target_industry', template="plotly_dark")
     st.plotly_chart(fig_ind, use_container_width=True)
 
-    # --- 3. GLOSARIO PROFESIONAL DE AMENAZAS ---
+    # --- DICCIONARIO COMPLETO RE-ESTABLECIDO ---
     st.subheader("🕵️ Diccionario de Amenazas Analizadas")
-    st.write("Selecciona una amenaza para entender su funcionamiento y vectores de ataque:")
-
     col_a, col_b = st.columns(2)
 
     with col_a:
         with st.expander("🌐 **DDoS (Denegación de Servicio)**"):
-            st.write("""
-            **Qué es:** Inunda un servidor o red con tráfico falso para dejarlo inoperativo.  
-            **Impacto:** Interrupción total de servicios digitales y pérdidas por inactividad.
-            """)
-            
+            st.write("Inunda un servidor con tráfico falso para dejarlo inoperativo.")
         with st.expander("🦠 **Malware (Software Malicioso)**"):
-            st.write("""
-            **Qué es:** Término general para virus, troyanos o gusanos diseñados para infiltrarse o dañar un dispositivo sin consentimiento.  
-            **Impacto:** Robo de información y control remoto de sistemas.
-            """)
-
+            st.write("Software diseñado para infiltrarse o dañar un dispositivo.")
         with st.expander("👥 **Man-in-the-Middle (MitM)**"):
-            st.write("""
-            **Qué es:** El atacante intercepta en secreto la comunicación entre dos partes (como tu PC y tu banco) para robar datos.  
-            **Impacto:** Robo de credenciales y sesiones bancarias.
-            """)
+            st.write("Intercepción de comunicación entre dos partes para robar datos.")
 
     with col_b:
         with st.expander("🎣 **Phishing (Suplantación)**"):
-            st.write("""
-            **Qué es:** Ingeniería social mediante correos o mensajes falsos para engañar al usuario y obtener sus contraseñas.  
-            **Impacto:** Es la puerta de entrada principal para el 90% de los ciberataques.
-            """)
-
+            st.write("Engaño mediante mensajes falsos para obtener contraseñas.")
         with st.expander("🔒 **Ransomware (Secuestro de Datos)**"):
-            st.write("""
-            **Qué es:** Cifra los archivos de la víctima y exige un rescate (usualmente en cripto) para devolver el acceso.  
-            **Impacto:** Es el ataque más costoso financieramente en la actualidad.
-            """)
-
+            st.write("Cifra archivos y exige rescate para devolver el acceso.")
         with st.expander("💉 **SQL Injection (Inyección SQL)**"):
-            st.write("""
-            **Qué es:** Inserción de código malicioso en formularios web para manipular la base de datos de la empresa.  
-            **Impacto:** Filtración masiva de bases de datos de clientes y empleados.
-            """)
-
+            st.write("Inserción de código malicioso para manipular bases de datos.")
+            
+# --- BLOQUE: ANÁLISIS DE COSTOS ---
+# Uso de Treemaps para identificar qué industrias y ataques son más costosos.
 elif menu == "💰 Análisis de Costos":
     st.title("💰 Análisis de Impacto Financiero")
     query_costos = """
     SELECT target_industry, attack_type, ROUND(AVG(financial_loss_in_million_), 2) as perdida_promedio
     FROM amenazas
-    GROUP BY target_industry, attack_type
-    ORDER BY perdida_promedio DESC
+    GROUP BY 1, 2 ORDER BY perdida_promedio DESC
     """
     df_costos = ejecutar_query(query_costos)
     fig_tree = px.treemap(df_costos, path=['target_industry', 'attack_type'], 
                           values='perdida_promedio', color='perdida_promedio', 
-                          color_continuous_scale='RdBu', title="Mapa de Calor de Pérdidas")
+                          color_continuous_scale='RdBu', title="Jerarquía de Pérdidas por Sector")
     st.plotly_chart(fig_tree, use_container_width=True)
-    st.dataframe(df_costos)
 
+# --- BLOQUE: ANÁLISIS GEOGRÁFICO ---
+# Mapa interactivo y comparativa de rendimiento (respuesta vs pérdida) por país.
 elif menu == "🌍 Análisis Geográfico":
     st.title("🌍 Comparativa Global por Países")
     query_pais = "SELECT country, SUM(financial_loss_in_million_) as perdida_total, AVG(incident_resolution_time_in_hours) as tiempo_avg FROM amenazas GROUP BY country"
     df_pais = ejecutar_query(query_pais)
+    
+    # Mapa Choropleth: Intensidad de pérdidas económicas por nación
     fig_mapa = px.choropleth(df_pais, locations="country", locationmode='country names',
                              color="perdida_total", title="Impacto Económico Global", color_continuous_scale="Reds")
     st.plotly_chart(fig_mapa, use_container_width=True)
+    
 
+    # Rankings: Mejores y peores desempeños geográficos
     col_left, col_right = st.columns(2)
     with col_left:
         st.subheader("Top 10 Más Afectados ($)")
@@ -146,166 +147,52 @@ elif menu == "🌍 Análisis Geográfico":
         st.subheader("Top 10 Más Rápidos (Respuesta)")
         st.plotly_chart(px.bar(df_pais.nsmallest(10, 'tiempo_avg'), x='tiempo_avg', y='country', orientation='h', color='tiempo_avg', color_continuous_scale='Greens_r'), use_container_width=True)
 
+# --- BLOQUE: EVOLUCIÓN TEMPORAL ---
+# Gráficos de área y barras para visualizar tendencias y crecimiento de ataques en el tiempo.
 elif menu == "📈 Evolución Temporal":
     st.title("📈 Análisis de Tendencias Históricas (2015-2024)")
-    
-    # Consulta para obtener datos por año y tipo de ataque
-    query_trend = """
-    SELECT year, attack_type, 
-           SUM(financial_loss_in_million_) as total_perdida,
-           COUNT(*) as cantidad_incidentes
-    FROM amenazas 
-    GROUP BY year, attack_type 
-    ORDER BY year ASC
-    """
+    query_trend = "SELECT year, attack_type, SUM(financial_loss_in_million_) as total_perdida, COUNT(*) as cantidad_incidentes FROM amenazas GROUP BY 1, 2 ORDER BY year ASC"
     df_trend = ejecutar_query(query_trend)
 
-    # 1. Gráfico de Área Apilada (Muestra el crecimiento y la composición)
-    st.subheader("Impacto Económico Acumulado por Tipo de Ataque")
-    fig_area = px.area(df_trend, x="year", y="total_perdida", color="attack_type",
-                       title="Evolución de Pérdidas Financieras (MUSD)",
-                       labels={"total_perdida": "Pérdida (MUSD)", "year": "Año"},
-                       template="plotly_dark",
-                       line_group="attack_type")
+    # Gráfico de área: Muestra cómo se acumula la pérdida año tras año
+    fig_area = px.area(df_trend, x="year", y="total_perdida", color="attack_type", template="plotly_dark")
     st.plotly_chart(fig_area, use_container_width=True)
 
-    # 2. Comparativa de Volumen vs Costo
-    col_l, col_r = st.columns(2)
-    
-    with col_l:
-        st.subheader("Crecimiento de Incidentes")
-        # Agrupamos por año para ver el volumen total
-        df_vol = df_trend.groupby('year')['cantidad_incidentes'].sum().reset_index()
-        fig_vol = px.bar(df_vol, x="year", y="cantidad_incidentes", 
-                         title="Cantidad de Ataques por Año",
-                         color_discrete_sequence=['#ff4b4b'])
-        st.plotly_chart(fig_vol, use_container_width=True)
+    # Slider interactivo: Permite al usuario filtrar detalles por un año específico
+    año_sel = st.slider("Seleccione un año para ver el detalle:", 2015, 2024, 2024)
+    st.table(df_trend[df_trend['year'] == año_sel].set_index('attack_type'))
 
-    with col_r:
-        st.subheader("Análisis de Intensidad")
-        st.write("""
-        **Interpretación:** A medida que avanzamos hacia 2024, observamos que la sofisticación de los ataques (como el Ransomware) 
-        ha incrementado la 'pendiente' de la gráfica de área. 
-        
-        Esto sugiere que aunque el número de ataques se mantenga estable, el **costo por incidente** es cada vez mayor debido a la digitalización de la economía.
-        """)
-        st.info("📊 **Dato Clave:** El periodo 2021-2024 muestra una aceleración en pérdidas debido a ataques dirigidos a Infraestructura Crítica.")
-
-    # 3. Selector de Año para Inspección Rápida
-    st.divider()
-    año_sel = st.slider("Desliza para inspeccionar un año específico:", 2015, 2024, 2024)
-    df_year = df_trend[df_trend['year'] == año_sel]
-    st.write(f"### Detalle del año {año_sel}")
-    st.table(df_year[['attack_type', 'total_perdida', 'cantidad_incidentes']].set_index('attack_type'))
-
+# --- BLOQUE: EFICIENCIA DE DEFENSA ---
+# Análisis correlacional entre la tecnología usada, el tiempo de respuesta y el costo final.
 elif menu == "⚡ Eficiencia de Defensa":
     st.title("⚡ Análisis de Respuesta y Mitigación")
-    
-    # Consulta avanzada: Tiempo medio vs Pérdida media
-    query_eficiencia = """
-    SELECT defense_mechanism_used, 
-           AVG(incident_resolution_time_in_hours) as tiempo_medio,
-           AVG(financial_loss_in_million_) as perdida_media,
-           COUNT(*) as frecuencia
-    FROM amenazas
-    GROUP BY 1 ORDER BY tiempo_medio ASC
-    """
+    query_eficiencia = "SELECT defense_mechanism_used, AVG(incident_resolution_time_in_hours) as tiempo_medio, AVG(financial_loss_in_million_) as perdida_media, COUNT(*) as frecuencia FROM amenazas GROUP BY 1"
     df_ef = ejecutar_query(query_eficiencia)
 
-    # Gráfico de Dispersión (Scatter) para ver Eficiencia vs Costo
-    st.subheader("Rendimiento de Mecanismos de Defensa")
-    fig_scatter = px.scatter(df_ef, 
-                             x="tiempo_medio", 
-                             y="perdida_media",
-                             size="frecuencia", 
-                             color="defense_mechanism_used",
-                             hover_name="defense_mechanism_used",
-                             labels={
-                                 "tiempo_medio": "Tiempo de Respuesta (Horas)",
-                                 "perdida_media": "Pérdida Promedio (MUSD)"
-                             },
-                             title="Relación: Velocidad de Respuesta vs. Impacto Económico",
-                             template="plotly_dark")
-    
+    # Scatter Plot: Identifica qué tecnologías son más rápidas y baratas de implementar
+    fig_scatter = px.scatter(df_ef, x="tiempo_medio", y="perdida_media", size="frecuencia", color="defense_mechanism_used", template="plotly_dark")
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-    #  Columnas para Insights Rápidos
-    col_a, col_b = st.columns(2)
-    
-    with col_a:
-        st.write("### 🥇 El Más Rápido")
-        mejor_tiempo = df_ef.iloc[0]
-        st.success(f"**{mejor_tiempo['defense_mechanism_used']}**")
-        st.metric("Tiempo récord", f"{mejor_tiempo['tiempo_medio']:.1f} Horas")
-
-    with col_b:
-        st.write("### 🛡️ El Más Costo-Efectivo")
-        # El que tiene menor perdida media
-        mejor_costo = df_ef.sort_values('perdida_media').iloc[0]
-        st.info(f"**{mejor_costo['defense_mechanism_used']}**")
-        st.metric("Menor impacto", f"${mejor_costo['perdida_media']:.1f}M")
-
-    st.divider()
-    
-    # Comparativa Detallada (Tabla con estilo)
-    st.subheader("Métricas Detalladas por Tecnología")
-    st.dataframe(df_ef.style.background_gradient(subset=['tiempo_medio'], cmap='RdYlGn_r'))
-
-elif menu == "💡 Recomendaciones":
-    st.title("💡 Hoja de Ruta Estratégica 2024-2030")
-    st.markdown("""
-    Basado en el análisis de datos históricos, se proponen las siguientes líneas de acción 
-    para fortalecer la postura de seguridad de las organizaciones.
+    with st.expander("📝 ¿Cómo leer este gráfico de eficiencia?"):
+     st.write("""
+    Este gráfico correlaciona la velocidad de respuesta con el impacto financiero:
+    - **Eje X (Tiempo):** Entre más a la izquierda, más rápida fue la defensa.
+    - **Eje Y (Pérdida):** Entre más abajo, más efectiva fue la mitigación económica.
+    - **Tamaño del punto:** Indica qué tan común es el uso de esa defensa en nuestra base de datos.
     """)
 
-    # --- TABS PARA ORGANIZAR POR NIVEL ---
+# --- BLOQUE: RECOMENDACIONES ---
+# Sección final con la propuesta estratégica basada en los hallazgos de los datos.
+elif menu == "💡 Recomendaciones":
+    st.title("💡 Hoja de Ruta Estratégica 2024-2030")
+    
+    # Organización por pestañas (Tabs) para separar lo técnico de lo organizacional
     tab1, tab2, tab3 = st.tabs(["🛡️ Técnica", "🏢 Organizacional", "🌐 Global"])
-
     with tab1:
-        st.subheader("Optimización Tecnológica")
-        col_a, col_b = st.columns(2)
-        
-        with col_a:
-            st.info("#### 🤖 IA y Automatización")
-            st.write("""
-            **Prioridad:** Alta.  
-            Implementar sistemas de detección basados en Machine Learning. 
-            Los datos muestran que reducen el tiempo de respuesta (MTTR) en un 40%.
-            """)
-        
-        with col_b:
-            st.info("#### 🔑 Cifrado Avanzado")
-            st.write("""
-            **Prioridad:** Crítica.  
-            El cifrado de datos en reposo y tránsito es la última línea de defensa 
-            contra la filtración de información sensible (Data Breach).
-            """)
-
+        st.info("#### Optimización Tecnológica: Implementar IA y Cifrado Avanzado.")
     with tab2:
-        st.subheader("Cultura y Procesos")
-        st.warning("⚠️ **Modelo Zero Trust (Confianza Cero)**")
-        st.write("""
-        Las empresas deben migrar de una seguridad de 'perímetro' a una donde 
-        **nunca se confía y siempre se verifica**. Esto es vital para sectores de 
-        Infraestructura Crítica que manejan servicios esenciales.
-        """)
-        
-        with st.expander("Ver plan de implementación Zero Trust"):
-            st.write("""
-            1. **Identificar:** Clasificar activos y datos críticos.
-            2. **Controlar:** Implementar autenticación multifactor (MFA).
-            3. **Monitorear:** Inspeccionar todo el tráfico de red en tiempo real.
-            """)
-
+        st.warning("#### Cultura: Adoptar el modelo Zero Trust (Confianza Cero).")
     with tab3:
-        st.subheader("Impacto Socioeconómico")
-        st.success("✅ **Resiliencia Productiva**")
-        st.write("""
-        La ciberseguridad debe verse como un habilitador de la transformación productiva. 
-        Una nación con ciberseguridad sólida atrae mayor inversión extranjera y 
-        protege su Propiedad Intelectual.
-        """)
-        
-        st.markdown("---")
-        st.markdown("#### 📝 Resumen Ejecutivo")
-        st.caption("Documento generado para el programa Talento Tech - Nivel Integrador.")
+        st.success("#### Global: Fomentar la resiliencia productiva nacional.")
+
+    st.caption("Documento generado para el programa Talento Tech - Nivel Integrador.")
