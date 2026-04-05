@@ -1,19 +1,71 @@
+# ============================================================
+# 📊 CYBER INTELLIGENCE DASHBOARD
+# Descripción:
+# Aplicación interactiva desarrollada en Streamlit para el análisis
+# de amenazas de ciberseguridad, enfocada en impacto económico,
+# tendencias temporales y eficiencia de defensa.
+# ============================================================
+
+
+# =========================
+# 📦 IMPORTACIÓN DE LIBRERÍAS
+# =========================
+
 import streamlit as st
 import pandas as pd
 import sqlite3
 import plotly.express as px
+from streamlit_option_menu import option_menu
 
-# 1. Configuración de página (Debe ser lo primero)
+# =========================
+# ⚙️ CONFIGURACIÓN INICIAL
+# =========================
+# Debe ser la primera instrucción de Streamlit
+
 st.set_page_config(page_title="Cyber Intelligence Dashboard", layout="wide")
 
-# Intentar importar estilos (si el archivo styles.py existe)
+# =========================
+# 🎨 ANIMACION INICIAL
+# =========================
+
+import time
+
+def pantalla_carga():
+    placeholder = st.empty()
+
+    mensajes = [
+        "Inicializando sistema...",
+        "Cargando módulos de inteligencia...",
+        "Conectando a base de datos...",
+        "Analizando amenazas globales...",
+        "Acceso concedido ✔"
+    ]
+
+    for msg in mensajes:
+        placeholder.markdown(f"### 🟢 {msg}")
+        time.sleep(0.9)
+
+    placeholder.empty()
+
+# Ejecutar una sola vez
+if "loaded" not in st.session_state:
+    pantalla_carga()
+    st.session_state.loaded = True
+
+# =========================
+# 🎨 ESTILOS PERSONALIZADOS
+# =========================
+# Carga opcional de estilos externos para mejorar UI
+
 try:
     from styles import aplicar_estilos_personalizados
     aplicar_estilos_personalizados()
 except ImportError:
     pass
 
-# 2. Función de conexión a la base de datos
+# =========================
+# 🗄️ FUNCIÓN DE ACCESO A LA BASE DE DATOS
+# =========================
 def ejecutar_query(query):
     # Asegúrate de que la ruta 'data/ciberseguridad.db' sea correcta en tu PC
     conn = sqlite3.connect('data/ciberseguridad.db')
@@ -21,31 +73,77 @@ def ejecutar_query(query):
     conn.close()
     return df
 
-# --- CARGA GLOBAL DE DATOS ---
+# =========================
+# 📥 CARGA GLOBAL DE DATOS
+# =========================
+# Se realiza una carga inicial para evitar múltiples consultas repetidas
 try:
     df_all = ejecutar_query("SELECT * FROM amenazas")
 except Exception as e:
     st.error(f"Error al cargar la base de datos: {e}")
     df_all = pd.DataFrame() 
 
-# 3. BARRA LATERAL (SIDEBAR)
-st.sidebar.header("Navegación del Proyecto")
-menu = st.sidebar.radio(
-    "Seleccione una sección:",
-    [
-        "🏠 Inicio", 
-        "📊 Resumen General", 
-        "💰 Análisis de Costos", 
-        "🌍 Análisis Geográfico", 
-        "📈 Evolución Temporal", 
-        "⚡ Eficiencia de Defensa", 
-        "💡 Recomendaciones"
-    ]
-)
 
-# --- BLOQUE: INICIO ---
+
+# =========================
+# ⚙️ BARRA LATERAL PROFESIONAL
+# =========================
+with st.sidebar:
+    # Título del dashboard
+    st.title("🚀 Cyber Intelligence")
+    
+    # Imagen opcional en la barra lateral (descomentar si tienes logo)
+    # st.image("logo.png", use_column_width=True)
+
+    st.markdown("---")  # Separador visual
+
+    # Navegación con estilo pro
+    menu = option_menu(
+        menu_title=None,  # Sin título
+        options=[
+            "🏠 Inicio", 
+            "📊 Resumen General", 
+            "💰 Análisis de Costos", 
+            "🌍 Análisis Geográfico", 
+            "📈 Evolución Temporal", 
+            "⚡ Eficiencia de Defensa", 
+            "💡 Recomendaciones"
+        ],
+       
+        menu_icon="cast",  # Icono general del menú
+        default_index=0,
+        styles={
+            "container": {"padding": "5px", "background-color": "#0a0f1c"},
+            "nav-link": {
+                "font-size": "14px",
+                "text-align": "left",
+                "margin": "5px",
+                "color": "#e6f1ff",
+                "font-weight": "bold",
+                "border-radius": "10px",
+            },
+            "nav-link-selected": {
+                "background-color": "#00f2ff",
+                "color": "black",
+                "border-radius": "10px",
+            },
+        }
+    )
+
+    
+
+
+
+# ============================================================
+# 🏠 BLOQUE 1: INICIO
+# ============================================================
 if menu == "🏠 Inicio":
-    st.title("🛡️ Inteligencia de Amenazas y Visualización Geoespacial")
+    st.markdown("""
+<h1 style='color:#00f2ff; font-family: Orbitron;'>
+🛡️ Analisis Estrategico De Ciberseguridad Global
+</h1>
+<p style='color:#00ffcc;'>Sistema de monitoreo avanzado de amenazas globales</p>
+""", unsafe_allow_html=True)
     st.markdown("### *Un Enfoque Analítico para la Mitigación del Impacto Económico en Incidentes Digitales*")
     
     col1, col2 = st.columns([1.2, 0.8])
@@ -65,7 +163,9 @@ if menu == "🏠 Inicio":
         """)
         st.info("💡 **Línea de Investigación:** Ciber-Resiliencia e Impacto Financiero.")
 
-# --- BLOQUE: RESUMEN GENERAL ---
+# ============================================================
+# 📊 BLOQUE 2: RESUMEN GENERAL
+# ============================================================
 elif menu == "📊 Resumen General":
     st.markdown("# 📊 Inteligencia de Amenazas")
     st.write("Visión general del panorama de riesgo global y métricas críticas de impacto.")
@@ -86,11 +186,23 @@ elif menu == "📊 Resumen General":
                          labels={'target_industry': 'Sector', 'cuenta': 'Número de Incidentes'},
                          color='target_industry', template="plotly_dark")
         
+        
+        
         # Estilo neón para el gráfico
         fig_ind.update_traces(marker_line_color='#00f2ff', marker_line_width=1.5, opacity=0.8)
         st.plotly_chart(fig_ind, use_container_width=True)
 
-        # --- RE-ESTABLECIENDO EL DICCIONARIO DE ATAQUES ---
+        
+
+        st.info("""
+**🎯 Objetivo de este gráfico:** Identificar qué sectores industriales son los objetivos principales. 
+Al analizar la frecuencia, podemos determinar dónde se concentra el mayor riesgo sistémico y 
+priorizar las políticas de protección en las industrias más vulnerables.
+""")
+
+# -------- GLOSARIO DE ATAQUES --------
+        # Explicación conceptual para usuarios no técnicos
+
         st.divider()
         st.subheader("🕵️ Glosario Técnico de Vectores de Ataque")
         st.write("Haga clic en cada categoría para entender la naturaleza de la amenaza analizada:")
@@ -116,7 +228,10 @@ elif menu == "📊 Resumen General":
     else:
         st.warning("⚠️ No hay datos disponibles para mostrar el resumen.")
 
-# --- BLOQUE: ANÁLISIS DE COSTOS ---
+
+# ============================================================
+# 💰 BLOQUE 3: ANÁLISIS DE COSTOS
+# ============================================================
 elif menu == "💰 Análisis de Costos":
     st.title("💰 Análisis de Impacto Financiero")
     df_costos = ejecutar_query("""
@@ -128,23 +243,151 @@ elif menu == "💰 Análisis de Costos":
                           color_continuous_scale='RdBu', title="Jerarquía de Pérdidas por Sector")
     st.plotly_chart(fig_tree, use_container_width=True)
 
-# --- BLOQUE: ANÁLISIS GEOGRÁFICO ---
+    st.success("""
+**🔍 ¿Qué buscamos aquí?** Este mapa jerárquico (Treemap) permite comparar visualmente 
+la magnitud de las pérdidas económicas. El tamaño de los cuadros indica qué combinación 
+de 'Industria + Tipo de Ataque' está drenando más capital a nivel global.
+""")
+
+# ============================================================
+# 🌍 BLOQUE 4: ANÁLISIS GEOGRÁFICO
+# ============================================================
+
 elif menu == "🌍 Análisis Geográfico":
     st.title("🌍 Comparativa Global por Países")
-    df_pais = ejecutar_query("SELECT country, SUM(financial_loss_in_million_) as perdida_total, AVG(incident_resolution_time_in_hours) as tiempo_avg FROM amenazas GROUP BY country")
-    
-    fig_mapa = px.choropleth(df_pais, locations="country", locationmode='country names',
-                             color="perdida_total", title="Impacto Económico Global", color_continuous_scale="Reds")
-    st.plotly_chart(fig_mapa, use_container_width=True)
 
-# --- BLOQUE: EVOLUCIÓN TEMPORAL ---
+    df_map_anim = ejecutar_query("""
+    SELECT 
+        country,
+        year,
+        SUM(financial_loss_in_million_) as impacto
+    FROM amenazas
+    GROUP BY country, year
+    ORDER BY year
+    """)
+
+    fig_anim = px.choropleth(
+        df_map_anim,
+        locations="country",
+        locationmode="country names",
+        color="impacto",
+        hover_name="country",
+        animation_frame="year",
+        color_continuous_scale=["#0a0f1c", "#ff00c8", "#ff0000"],
+        title="🌍 Simulación de Ataques Globales en el Tiempo"
+    )
+
+    fig_anim.update_layout(
+        paper_bgcolor="#0a0f1c",
+        plot_bgcolor="#0a0f1c",
+        font=dict(color="#e6f1ff"),
+        title_font=dict(size=22, color="#00f2ff")
+    )
+
+    st.plotly_chart(fig_anim, use_container_width=True)
+
+    import random
+    import time
+
+    def live_feed(df):
+        placeholder = st.empty()
+        ataques = df.sample(min(20, len(df)))
+
+        for _, row in ataques.iterrows():
+            placeholder.markdown(f"""
+            🔴 **ATAQUE DETECTADO**
+            
+            🌍 País: {row['country']}  
+            📅 Año: {row['year']}  
+            💰 Impacto: ${row['impacto']}M  
+            """)
+            time.sleep(0.9)
+
+    st.subheader("📡 Feed de Ataques en Tiempo Real")
+    live_feed(df_map_anim)
+
+# ============================================================
+# 📈 BLOQUE 5: EVOLUCIÓN TEMPORAL
+# ============================================================
 elif menu == "📈 Evolución Temporal":
     st.title("📈 Análisis de Tendencias Históricas")
-    df_trend = ejecutar_query("SELECT year, attack_type, SUM(financial_loss_in_million_) as total_perdida FROM amenazas GROUP BY 1, 2 ORDER BY year ASC")
-    fig_area = px.area(df_trend, x="year", y="total_perdida", color="attack_type", template="plotly_dark")
+
+    # Consulta
+    df_trend = ejecutar_query("""
+        SELECT year, attack_type, SUM(financial_loss_in_million_) as total_perdida 
+        FROM amenazas 
+        GROUP BY year, attack_type 
+        ORDER BY year ASC
+    """)
+
+    # Filtro interactivo por tipo de ataque
+    tipos = df_trend["attack_type"].unique()
+    seleccion = st.multiselect("🎯 Filtrar tipo de ataque", tipos, default=tipos)
+    df_filtrado = df_trend[df_trend["attack_type"].isin(seleccion)]
+
+    # Gráfico con animación por año
+    fig_area = px.area(
+        df_filtrado,
+        x="year",
+        y="total_perdida",
+        color="attack_type",
+        template="plotly_dark",
+        animation_frame="year",  # 🔥 Animación por año
+        color_discrete_sequence=["#00f2ff", "#ff00c8", "#00ff88", "#ffaa00"],
+        title="🌍 Evolución de los Ataques Cibernéticos"
+    )
+
+    # Línea total global (agregamos la línea total por año)
+    df_total = df_filtrado.groupby("year")["total_perdida"].sum().reset_index()
+    fig_area.add_scatter(
+        x=df_total["year"],
+        y=df_total["total_perdida"],
+        mode="lines+markers",
+        name="Total Global",
+        line=dict(color="#ffffff", width=3, dash="dash")
+    )
+
+    # Pico de ataques (añadir anotación)
+    max_row = df_total.loc[df_total["total_perdida"].idxmax()]
+    fig_area.add_annotation(
+        x=max_row["year"],
+        y=max_row["total_perdida"],
+        text="🚨 Pico de ataques",
+        showarrow=True,
+        arrowhead=2,
+        font=dict(color="#ff4d4d", size=12)
+    )
+
+    # Estilo final para el gráfico (ambiente cyber)
+    fig_area.update_layout(
+        paper_bgcolor="#0a0f1c",
+        plot_bgcolor="#0a0f1c",
+        font=dict(color="#e6f1ff"),
+        title_font=dict(size=22, color="#00f2ff"),
+        hovermode="x unified",  # Mostrar detalles al pasar por encima
+        showlegend=True,  # Mostrar leyenda de tipos de ataque
+        updatemenus=[dict(
+            type="buttons",
+            showactive=False,
+            buttons=[dict(label="Reproducir",
+                          method="animate", args=[None, dict(frame=dict(duration=1000, redraw=True), fromcurrent=True)])]
+        )]
+    )
+
+    # Mostrar gráfico interactivo
     st.plotly_chart(fig_area, use_container_width=True)
 
-# --- BLOQUE: EFICIENCIA DE DEFENSA ---
+    # Análisis automático
+    st.markdown("""
+    🧠 **Análisis automático:**  
+    Se observa una tendencia creciente en el impacto económico de los ciberataques, 
+    con picos asociados a ataques de alta sofisticación como ransomware y exploits avanzados.
+    """)
+
+
+# ============================================================
+# ⚡ BLOQUE 6: EFICIENCIA DE DEFENSA
+# ============================================================
 elif menu == "⚡ Eficiencia de Defensa":
     st.title("⚡ Análisis de Respuesta y Mitigación")
     df_ef = ejecutar_query("SELECT defense_mechanism_used, AVG(incident_resolution_time_in_hours) as tiempo_medio, AVG(financial_loss_in_million_) as perdida_media, COUNT(*) as frecuencia FROM amenazas GROUP BY 1")
@@ -152,7 +395,7 @@ elif menu == "⚡ Eficiencia de Defensa":
     fig_scatter = px.scatter(df_ef, x="tiempo_medio", y="perdida_media", size="frecuencia", color="defense_mechanism_used", template="plotly_dark")
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-    # CORRECCIÓN DE INDENTACIÓN AQUÍ:
+    
     with st.expander("📝 ¿Cómo leer este gráfico de eficiencia?"):
         st.write("""
         Este gráfico correlaciona la velocidad de respuesta con el impacto financiero:
@@ -160,13 +403,61 @@ elif menu == "⚡ Eficiencia de Defensa":
         - **Eje Y (Pérdida):** Entre más abajo, más efectiva fue la mitigación económica.
         """)
 
-# --- BLOQUE: RECOMENDACIONES ---
+# ============================================================
+# 💡 BLOQUE DE RECOMENDACIONES
+# ============================================================
+#
 elif menu == "💡 Recomendaciones":
-    st.title("💡 Hoja de Ruta Estratégica")
-    tab1, tab2, tab3 = st.tabs(["🛡️ Técnica", "🏢 Organizacional", "🌐 Global"])
-    with tab1:
-        st.info("#### Optimización Tecnológica: Implementar IA y Cifrado Avanzado.")
-    with tab2:
-        st.warning("#### Cultura: Adoptar el modelo Zero Trust.")
-    with tab3:
-        st.success("#### Global: Fomentar la resiliencia productiva nacional.")
+    st.title("💡 Hoja de Ruta Estratégica ")
+
+    st.markdown("""
+    Nuestro objetivo es ofrecer **estrategias claras y visuales** para mitigar riesgos,
+    optimizar defensas y aumentar resiliencia.
+    """)
+
+    # =========================
+    # Tarjetas de Recomendaciones
+    # =========================
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown("""
+        <div style="background-color:#0a0f1c; padding:20px; border-radius:15px; text-align:center; box-shadow: 0px 0px 10px #00f2ff;">
+            <h3 style="color:#00f2ff;">🛡️ Técnica</h3>
+            <p style="color:#e6f1ff; font-size:14px;">
+            Implementar IA y cifrado avanzado para detección temprana de amenazas.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div style="background-color:#0a0f1c; padding:18px; border-radius:15px; text-align:center; box-shadow: 0px 0px 10px #ff00c8;">
+            <h3 style="color:#ff00c8;">🏢 Organizacional</h3>
+            <p style="color:#e6f1ff; font-size:14px;">
+            Adoptar modelo Zero Trust y fomentar cultura de ciber-resiliencia.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown("""
+        <div style="background-color:#0a0f1c; padding:20px; border-radius:15px; text-align:center; box-shadow: 0px 0px 10px #00ff9f;">
+            <h3 style="color:#00ff9f;">🌐 Global</h3>
+            <p style="color:#e6f1ff; font-size:14px;">
+            Fomentar la resiliencia productiva a nivel nacional e internacional.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # =========================
+    # Detalle interactivo
+    # =========================
+    st.markdown("---")
+    with st.expander("📌 Ver Detalles de Implementación"):
+        st.markdown("""
+        - **Monitoreo 24/7**: Sistemas de alerta temprana y dashboards de control.
+        - **Simulaciones de ataque**: Red Team & Blue Team para pruebas de resiliencia.
+        - **Políticas de capacitación**: Entrenamiento continuo para equipos técnicos y usuarios.
+        - **Revisión periódica de protocolos**: Ajuste de controles según evolución de amenazas.
+        """)
