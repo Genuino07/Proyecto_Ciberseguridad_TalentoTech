@@ -26,11 +26,11 @@ Este proyecto fue desarrollado como parte del **Nivel Integrador del programa Ta
 * **WebApp:**  [Streamlit Cloud](https://proyectociberseguridadtalentotech.streamlit.app/)
 * **GITHUB:**  https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech
 
-* **Autores:** Stefany Builes Lopera
-               Jackeline Hernamdez
-               Veronica Restrepo Betancurt
-               Jaduer Zuñiga Madariaga
-               Julio Javier Molinares Zapata
-               Jose David Ortiz salazar
-               Camilo Piedrahita Alzate
+* **Autores:** Stefany Builes Lopera,
+               Jackeline Hernamdez,
+               Veronica Restrepo Betancurt,
+               Jaduer Zuñiga Madariaga,
+               Julio Javier Molinares Zapata,
+               Jose David Ortiz salazar,
+               Camilo Piedrahita Alzate,
                Miguel Sierra 
