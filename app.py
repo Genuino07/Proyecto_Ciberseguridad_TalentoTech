@@ -243,10 +243,13 @@ elif menu == "💰 Análisis de Costos":
                           color_continuous_scale='RdBu', title="Jerarquía de Pérdidas por Sector")
     st.plotly_chart(fig_tree, use_container_width=True)
 
-    st.success("""
-**🔍 ¿Qué buscamos aquí?** Este mapa jerárquico (Treemap) permite comparar visualmente 
-la magnitud de las pérdidas económicas. El tamaño de los cuadros indica qué combinación 
-de 'Industria + Tipo de Ataque' está drenando más capital a nivel global.
+    # Información adicional debajo del gráfico
+    st.markdown("""
+### ¿Qué estamos viendo aquí?
+Este gráfico muestra la **distribución del impacto económico** global causado por diferentes tipos de ataques de ciberseguridad, clasificados por **industria**. Los **bloques más grandes** indican combinaciones de sector y tipo de ataque con mayores pérdidas económicas.
+
+- **Colores**: La escala de colores va de **amarillo a rojo**, donde el **rojo indica mayores pérdidas**.
+- **Tamaño de los bloques**: El tamaño de cada bloque es proporcional al **impacto económico promedio** generado por ese tipo de ataque en ese sector.
 """)
 
 # ============================================================

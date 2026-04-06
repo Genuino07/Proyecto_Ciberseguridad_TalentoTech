@@ -23,7 +23,9 @@ Este proyecto fue desarrollado como parte del **Nivel Integrador del programa Ta
 3. Ejecuta la app: `streamlit run app.py`.
 
 ## 🚀 Enlaces
-* **WebApp:** [Streamlit Cloud](https://proyectociberseguridadtalentotech.streamlit.app/)
+* **WebApp:**  [Streamlit Cloud](https://proyectociberseguridadtalentotech.streamlit.app/)
+* **GITHUB:**  https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech
+
 * **Autores:** Stefany Builes Lopera
                Jackeline Hernamdez
                Veronica Restrepo Betancurt
