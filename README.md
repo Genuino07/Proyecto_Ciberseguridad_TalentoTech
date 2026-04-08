@@ -1,4 +1,4 @@
-# 🛡️ Inteligencia de Amenazas y Visualización Geoespacial
+# 🛡️ Análisis Estratégico de Ciberseguridad Global: Tendencias, Impacto Financiero y Defensa (2015-2024)
 ### *Un Enfoque Analítico para la Mitigación del Impacto Económico en Incidentes Digitales*
 
 ## 📋 Descripción del Proyecto
