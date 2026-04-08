@@ -25,7 +25,7 @@ Este proyecto fue desarrollado como parte del **Nivel Integrador del programa Ta
 ## 🚀 Enlaces
 * **WebApp:**  [Streamlit Cloud](https://proyectociberseguridadtalentotech.streamlit.app/)
 * **GITHUB:**  https://github.com/Genuino07/Proyecto_Ciberseguridad_TalentoTech
-* **landig page "Netlify":** https://teal-mermaid-536e69.netlify.app/
+* **Landing page "Netlify":** https://teal-mermaid-536e69.netlify.app/
 
 * **Autores:** Stefany Builes Lopera,
                Jackeline Hernamdez,
