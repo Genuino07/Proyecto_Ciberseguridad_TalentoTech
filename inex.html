@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Intelligence Hub | Talento Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff00c8;
+            --neon-green: #00ff9f;
+            --dark-bg: #050a14;
+            --panel-bg: rgba(10, 15, 28, 0.95);
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+            color: #e6f1ff;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* --- 1. HERO SECTION --- */
+        header { text-align: center; margin-bottom: 80px; padding-top: 60px; }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #b0c4de;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* --- 2. EL PROBLEMA (Pain Point) --- */
+        .pain-point {
+            background: rgba(255, 0, 200, 0.05);
+            border-left: 4px solid var(--neon-pink);
+            padding: 40px;
+            margin: 60px 0;
+            border-radius: 0 15px 15px 0;
+            text-align: center;
+        }
+
+        .pain-point h2 { font-family: 'Orbitron', sans-serif; color: var(--neon-pink); font-size: 1rem; margin-bottom: 15px; }
+        .pain-point p { font-size: 1.4rem; font-weight: 300; font-style: italic; color: #ffb3e6; }
+
+        /* --- 3. DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .panel:hover { border-color: var(--neon-cyan); transform: translateY(-5px); }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            display: block;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .stats-circle {
+            width: 70px; height: 70px;
+            border: 3px solid var(--neon-green);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; box-shadow: 0 0 15px rgba(0, 255, 159, 0.3);
+        }
+
+        .loss-counter {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--neon-pink);
+            margin: 15px 0;
+        }
+
+        /* --- 4. STACK TECNOLÓGICO --- */
+        .stack-section { text-align: center; margin: 80px 0; }
+        .stack-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 30px; }
+        
+        .tech-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 25px;
+            border-radius: 5px;
+            border: 1px solid var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+        }
+
+        /* --- 5. EQUIPO (Autoría) --- */
+        .team-section { margin: 80px 0; text-align: center; }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .member {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 3px solid var(--neon-green);
+            border-radius: 10px;
+        }
+        .member h4 { font-family: 'Orbitron', sans-serif; margin: 0; font-size: 0.9rem; }
+
+        /* --- BOTÓN Y FOOTER --- */
+        .btn-launch {
+            display: block; width: fit-content; margin: 50px auto;
+            padding: 20px 50px; font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan); text-decoration: none;
+            border: 2px solid var(--neon-cyan);
+            font-weight: bold; transition: 0.4s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            background: rgba(0, 242, 255, 0.05);
+        }
+        .btn-launch:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 30px var(--neon-cyan); }
+
+        footer {
+            text-align: center; padding: 60px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem; color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Análisis Estratégico De Ciberseguridad Global</h1>
+            <p class="tagline">Análisis avanzado de 10 años de incidentes globales para la toma de decisiones estratégicas en seguridad digital.</p>
+        </header>
+
+        <section class="pain-point">
+            <h2>EL DESAFÍO ACTUAL</h2>
+            <p>"En la última década, las pérdidas por ciberataques han superado los miles de millones de dólares. Sin datos claros, las empresas no saben dónde invertir en seguridad."</p>
+        </section>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <span class="panel-title">MAPA GLOBAL DE ATAQUES</span>
+                <img src="https://img.icons8.com/neon/96/globe.png" width="50" style="margin-bottom:10px;">
+                <p style="font-size: 0.8rem; opacity: 0.7;">Monitoreo de nodos de ataque en 10+ países críticos.</p>
+                <div style="font-size: 0.7rem; color: var(--neon-green);">[ SISTEMA ONLINE ]</div>
+            </div>
+
+            <div class="panel">
+                <span class="panel-title">VECTORES DE AMENAZA</span>
+                <div class="stats-circle">74%</div>
+                <p style="font-size: 0.8rem; margin: 0;">Concentración en Phishing y Ransomware según registros históricos SQL.</p>
+            </div>
+
+            <div class="panel">
+                <span class="panel-title">IMPACTO FINANCIERO</span>
+                <div class="loss-counter" id="counter">$12,345,678</div>
+                <p style="font-size: 0.8rem;">Pérdida media calculada por sector industrial afectado.</p>
+            </div>
+        </div>
+
+        <section class="stack-section">
+            <h2 style="font-family: 'Orbitron'; font-size: 1.2rem;">STACK TECNOLÓGICO</h2>
+            <div class="stack-grid">
+                <div class="tech-card">PYTHON / PANDAS</div>
+                <div class="tech-card">SQLITE (SQL)</div>
+                <div class="tech-card">STREAMLIT</div>
+                <div class="tech-card">PLOTLY EXPRESS</div>
+            </div>
+        </section>
+
+        <a href="https://proyectociberseguridadtalentotech.streamlit.app/" class="btn-launch">EXPLORAR DASHBOARD EN VIVO</a>
+
+        <section class="team-section">
+            <h2 style="font-family: 'Orbitron'; font-size: 1.2rem; color: var(--neon-green);">EQUIPO DE DESARROLLO</h2>
+            <p style="font-size: 0.9rem; opacity: 0.6;">Proyecto Integrador - Talento Tech 2026</p>
+            <div class="team-grid">
+                <div class="member"><h4>STEFANY BUILES LOPERA</h4></div>
+                <div class="member"><h4>JACKELINE HERNÁNDEZ</h4></div>
+                <div class="member"><h4>VERÓNICA RESTREPO</h4></div>
+                <div class="member"><h4>JADUER ZUÑIGA MADARIAGA</h4></div>
+                <div class="member"><h4>JULIO JAVIER MOLINARES</h4></div>
+                <div class="member"><h4>JOSE DAVID ORTIZ SALAZAR</h4></div>
+                <div class="member"><h4>CAMILO PIEDRAHITA ALZATE</h4></div>
+                <div class="member"><h4>MIGUEL SIERRA</h4></div
+
+
+            </div>
+        </section>
+
+        <footer>
+            <p>Desarrollado para el análisis de resiliencia digital y mitigación de riesgos.</p>
+            <p>GitHub • LinkedIn • 2026 Cyber Intelligence Hub</p>
+        </footer>
+    </div>
+
+    <script>
+        // Efecto de contador dinámico
+        let count = 12345678;
+        setInterval(() => {
+            count += Math.floor(Math.random() * 150);
+            document.getElementById('counter').innerText = '$' + count.toLocaleString();
+        }, 2000);
+    </script>
+
+</body>
+</html>
